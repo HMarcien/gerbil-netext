@@ -8,7 +8,12 @@ This project provides Gerbil Scheme bindings for C networking interfaces that ar
 
 ```scheme
 ;; netdb.h — for host database access
-(import :netext/netdb)
+> (import :netext/netdb)
 
 ;; Example: get host information
-(getservbyname "smtp")
+> (def srv (service-info-by-name "smtp"))
+
+> {srv.to-string}
+"smtp (25/tcp)"
+
+```

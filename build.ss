@@ -3,5 +3,4 @@
 (import :std/build-script)
 
 (defbuild-script
-  '("gerbil-netdb/lib"
-    (exe: "gerbil-netdb/main" bin: "gerbil-netdb")))
+  '("util" "netdb"))
