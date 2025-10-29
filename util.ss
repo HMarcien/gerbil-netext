@@ -3,13 +3,11 @@
 
 (import :std/misc/bytes)
 
-(export htons
-        ntohs
-        htonl
-        ntohl)
+(export #t)
 
 ;; Convert a 16-bit integer from host byte order to network byte order (big endian).
-(def (htons n)
+(def (htons (n : :integer))
+  => :integer
   (if (eq? native-endianness 'little)
     (bitwise-ior (arithmetic-shift (bitwise-and n #xFF) 8)
                  (arithmetic-shift n -8))
@@ -19,7 +17,8 @@
 (defalias ntohs htons)
 
 ;; Convert a 32-bit integer from host byte order to network byte order (big endian).
-(def (htonl n)
+(def (htonl (n : :integer))
+  => :integer
   (if (eq? native-endianness 'little)
     (bitwise-ior
      (arithmetic-shift (bitwise-and n #x000000FF) 24)

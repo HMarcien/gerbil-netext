@@ -16,7 +16,7 @@
         service-info-protocol)
 
 
-(defstruct service-info ((name : :string) (port : :integer) (protocol : :string))
+(defstruct service-info ((name :- :string) (port :- :integer) (protocol :- :string))
   final: #t)
 
 (defmethod {to-string service-info}
@@ -25,20 +25,19 @@
 
 (def (service-info-by-name (name : :string) (protocol :? :string := "tcp"))
   => service-info
-  (service-entry name protocol))
+  (:- (service-entry name protocol) service-info))
 
 (def (service-info-by-port (port : :integer) (protocol :? :string := "tcp"))
   => service-info
-  (service-entry (htons port) protocol))
+  (:- (service-entry (htons port) protocol) service-info))
 
 (def (service-entry name-or-port (protocol : :string))
-  => service-info
   (let ((get-service (if (string? name-or-port) _getservbyname _getservbyport)))
     (try
      (let (service (check-ptr (get-service name-or-port protocol)))
-       (make-service-info (service-entry-name service)
-                          (service-entry-port service)
-                          protocol))
+       (service-info (service-entry-name service)
+                     (service-entry-port service)
+                     protocol))
      (catch (foreign-allocation-error? e)
        (let ((id (if (number? name-or-port)
                    (ntohs name-or-port)
@@ -46,15 +45,12 @@
          (error "Service not found" id))))))
 
 (def (service-entry-port service)
-  => :integer
   (ntohs (_servent-port service)))
 
 (def (service-entry-protocol service)
-  => :string
   (check-ptr (_servent-proto service)))
 
 (def (service-entry-name service)
-  => :string
   (check-ptr (_servent-name service)))
 
 (begin-ffi (_getservbyname _getservbyport _servent-port _servent-proto _servent-name)
